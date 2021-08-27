@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    platform: linux/x86_64
+    build: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: localuser
+      MYSQL_PASSWORD: localpass
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - '3306:3306'
+
+  api:
+    build: ./api
+    tty: true
+    environment:
+      APP_MODE: local
+      DB_USER: localuser
+      DB_PASSWORD: localpass
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: go_sample
+      DB_NAME_TEST: go_sample_test
+      DB_LOC: Asia%2FTokyo
+    volumes:
+      - './api:/app'
+    depends_on:
+      - db
+
+  proxy:
+    build: ./proxy
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
