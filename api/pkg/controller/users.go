@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fuhiz/docker-go-sample/app/pkg/connecter"
-	"github.com/fuhiz/docker-go-sample/app/pkg/model"
+	"github.com/esh2n/mysql-go-nginx/api/pkg/connecter"
+	"github.com/esh2n/mysql-go-nginx/api/pkg/model"
 )
 
 type UserController struct{}

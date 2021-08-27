@@ -1,4 +1,4 @@
-module github.com/fuhiz/docker-go-sample/app
+module github.com/esh2n/xmysql-go-nginx/api
 
 go 1.15
 

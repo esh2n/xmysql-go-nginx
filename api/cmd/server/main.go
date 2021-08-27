@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fuhiz/docker-go-sample/app/pkg/connecter"
-	"github.com/fuhiz/docker-go-sample/app/pkg/controller"
+	"github.com/esh2n/xmysql-go-nginx/api/pkg/connecter"
+	"github.com/esh2n/xmysql-go-nginx/api/pkg/controller"
 )
 
 func main() {
