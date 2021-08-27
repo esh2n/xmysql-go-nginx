@@ -26,6 +26,7 @@ services:
       DB_NAME: go_sample
       DB_NAME_TEST: go_sample_test
       DB_LOC: Asia%2FTokyo
+      SIGNINGKEY: something_secret_key
     volumes:
       - './api:/app'
     depends_on:
