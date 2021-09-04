@@ -8,14 +8,12 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+type Connecter struct {
+	DB *gorm.DB
+}
 
-func Setup() {
+func NewConnecter() *Connecter {
 	dbName := os.Getenv("DB_NAME")
-	if os.Getenv("APP_MODE") == "test" {
-		dbName = os.Getenv("DB_NAME_TEST")
-	}
-
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true&loc=%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
@@ -28,10 +26,11 @@ func Setup() {
 	if err != nil {
 		panic(err)
 	}
-
-	db = gormDB
+	return &Connecter{
+		DB: gormDB,
+	}
 }
 
-func DB() *gorm.DB {
-	return db
+func (c *Connecter) Get() *gorm.DB {
+	return c.DB
 }

@@ -9,6 +9,7 @@ curl localhost:8080/user/update -X PATCH -H "Content-Type: application/json" -H 
 
 ```
 dco up
+dco` exec api bash
 go run cmd/migrate/main.go -e up
 go run cmd/server/main.go
 ```
