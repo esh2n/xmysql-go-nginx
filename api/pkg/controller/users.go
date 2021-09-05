@@ -27,14 +27,9 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	}
 
 	ur := infra.NewUserRepository()
-	lastUser, err := ur.GetLastUser()
-	lastID := 0
-	if err == nil {
-		lastID = int(lastUser.ID)
-	}
 
-	user := model.NewUser(param.Name, lastID+1)
-	newUser, err := ur.CreateUser(user)
+	user := model.NewUser(param.Name)
+	newUser, err := ur.CreateUserInTransaction(user)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed on CreateUser()"})

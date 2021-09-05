@@ -34,3 +34,22 @@ func NewConnecter() *Connecter {
 func (c *Connecter) Get() *gorm.DB {
 	return c.DB
 }
+
+func (c *Connecter) TransactinHandler(txFunc func() (interface{}, error)) (data interface{}, err error) {
+	tx := c.DB.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			tx.Rollback()
+			panic(p)
+		} else if err != nil {
+			tx.Rollback()
+		} else {
+			err = tx.Commit().Error
+		}
+	}()
+	data, err = txFunc()
+	return
+}
