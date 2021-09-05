@@ -8,12 +8,12 @@ import (
 )
 
 type JwtUser struct {
-	ID   uint
+	ID   string
 	Name string
 	jwt.StandardClaims
 }
 
-func CreateTokenString(id uint, name string) string {
+func CreateTokenString(id string, name string) string {
 	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &JwtUser{
 		ID:   id,
 		Name: name,
