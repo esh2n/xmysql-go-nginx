@@ -1,26 +1,54 @@
 package auth
 
 import (
-	"log"
+	"fmt"
 	"os"
+	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/aead/chacha20poly1305"
+	u "github.com/esh2n/xmysql-go-nginx/api/pkg/domain/user"
+	"github.com/o1egl/paseto"
 )
 
-type JwtUser struct {
-	ID   string
-	Name string
-	jwt.StandardClaims
+type Payload struct {
+	User      *u.User   `json:"user"`
+	IssuedAt  time.Time `json:"issued_at"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
-func CreateTokenString(id string, name string) string {
-	token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), &JwtUser{
-		ID:   id,
-		Name: name,
-	})
-	tokenstring, err := token.SignedString([]byte(os.Getenv("SIGNINGKEY")))
-	if err != nil {
-		log.Fatalln(err)
+type PasetoMaker struct {
+	paseto       *paseto.V2
+	symmetricKey []byte
+	footer       []byte
+}
+
+func NewPasetoMaker() (*PasetoMaker, error) {
+	symmetricKey := os.Getenv("SYMMETRICKEY")
+	footer := os.Getenv("FOOTERKEY")
+	if len(symmetricKey) != chacha20poly1305.KeySize {
+		return &PasetoMaker{}, fmt.Errorf("invalid key size: must be exactly %d characters", chacha20poly1305.KeySize)
 	}
-	return tokenstring
+
+	maker := &PasetoMaker{
+		paseto:       paseto.NewV2(),
+		symmetricKey: []byte(symmetricKey),
+		footer:       []byte(footer),
+	}
+
+	return maker, nil
+}
+
+func (maker *PasetoMaker) CreateTokenString(user *u.User) (string, error) {
+	now := time.Now()
+	exp := now.Add(time.Hour * 24 * 15)
+
+	token, err := maker.paseto.Encrypt(maker.symmetricKey, &Payload{
+		User:      user,
+		IssuedAt:  now,
+		ExpiredAt: exp,
+	}, maker.footer)
+	if err != nil {
+		return "", fmt.Errorf("%d", err)
+	}
+	return token, err
 }

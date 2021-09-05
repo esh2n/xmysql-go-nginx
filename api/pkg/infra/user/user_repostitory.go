@@ -1,6 +1,8 @@
 package user
 
 import (
+	"fmt"
+
 	"github.com/esh2n/xmysql-go-nginx/api/pkg/auth"
 	u "github.com/esh2n/xmysql-go-nginx/api/pkg/domain/user"
 	"github.com/esh2n/xmysql-go-nginx/api/pkg/infra/connecter"
@@ -23,7 +25,11 @@ func (ur *UserRepository) CreateUser(user *u.User) (*u.User, error) {
 }
 
 func (ur *UserRepository) UpdateToken(user *u.User) (*u.User, error) {
-	token := auth.CreateTokenString(user.ID, user.Name)
+	m, _ := auth.NewPasetoMaker()
+	token, err := m.CreateTokenString(user)
+	if err != nil {
+		return nil, fmt.Errorf("%d", err)
+	}
 	return ur.UpdateUser(user, map[string]interface{}{"token": token})
 }
 
